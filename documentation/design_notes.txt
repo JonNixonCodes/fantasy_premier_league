@@ -1,0 +1,74 @@
+Project
+- Fantasy Premier League
+
+Objective
+- Data analysis on players, teams, form, past scores
+
+Analytical questions?
+- Which players are valuable to transfer?
+- Which players to form starting XI?
+- When and how to use chips?
+- Which player to pick as captain and vice captain?
+- How to visualise in-form players
+- What are the upcoming fixtures for each player on my team?
+- Stats on other managers in my league?
+
+Analytical use cases
+- Interrogate players/teams/seasons
+- Interrogate game weeks
+
+Future Use Cases
+- Predicting best players in each position each week
+- AI for play FPL
+
+Design
+- Cloud Run Job to ingest historical data from API endpoints into JSON files on GCS buckets. Triggered by HTTP request.
+	- Why Cloud Run?
+		For this use case I should strongly consider Cloud Functions as it is easier to develop and implement and meets the needs requirement. Benefit of Cloud Run is the flexibility of creating my own containerised application, and the ability to handle multiple requests. Since we are simply running a Python job this is not a requirement. Costs for both solutions are low since we are only running the job daily. For my use case I should remain within Cloud Functions free tier.
+- Cloud Run Job to ingest data from API endpoints into JSON files on GCS buckets. Triggered by HTTP request. Triggered daily by Cloud Scheduler job.
+	- Why ingest into GCS bucket and not directly into BigQuery?
+		Prefer multi-stage data processing as it allows future flexibility since the original raw data is kept. Cheaper to keep it in GCS buckets rather than BigQuery storage. Can keep the data in its original format.
+	- Why ingest as JSON files?
+		Original format of the input data is JSON.
+	- Why use Cloud Scheduler for scheduling job?
+		Easiest and cheapest way to do daily scheduling on Google Cloud
+- Apache Beam to ingest JSON data into parquet files stored using Hive partitioning
+	- Why Apache Beam?
+		Enables serverless data processing jobs since the jobs are highly sporadic and don't require resources to be online for long periods of time.
+	- Why store as parquet files?
+	- Why use Hive partitioning?
+	- Why not directly ingest JSON data into BigQuery?
+		Simpler to update the raw input daily as it doesn't require the additional data import step. Simply load the file into the HIVE partitioned GCS bucket.	
+- Read data into BigQuery using external tables
+	- Why use BigQuery?
+- Model the data in BigQuery
+	- How to model the data?
+	- Why model the data in this way?
+
+Further Design Questions
+- How to scale up for multiple users?
+- How to scale up for multiple data sources?
+
+
+Project folder structure
+.
+|
+|--setup/
+|	|
+|	|--cloud_run/
+|	|
+|	|--cloud_scheduler/
+|	|
+|	|--data_flow/
+|	|
+|	|--bigquery/
+|
+|--test/
+|
+|--download_historical_data.sh
+|
+|--download_live_data.sh
+|
+|--Makefile
+|
+|--README.md
