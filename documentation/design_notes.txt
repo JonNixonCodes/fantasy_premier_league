@@ -22,7 +22,7 @@ Future Use Cases
 - AI for play FPL
 
 Design
-- Cloud Run Job to ingest historical data from API endpoints into JSON files on GCS buckets. Triggered by HTTP request.
+- Cloud Run Job to ingest historical data from API endpoints into JSON files on GCS buckets. Triggered by HTTP request. Ingest into landing bucket (landing/source-name/load-date.json). Add metadata (e.g. source url and load date).
 	- Why Cloud Run?
 		For this use case I should strongly consider Cloud Functions as it is easier to develop and implement and meets the needs requirement. Benefit of Cloud Run is the flexibility of creating my own containerised application, and the ability to handle multiple requests. Since we are simply running a Python job this is not a requirement. Costs for both solutions are low since we are only running the job daily. For my use case I should remain within Cloud Functions free tier.
 - Cloud Run Job to ingest data from API endpoints into JSON files on GCS buckets. Triggered by HTTP request. Triggered daily by Cloud Scheduler job.
@@ -32,18 +32,35 @@ Design
 		Original format of the input data is JSON.
 	- Why use Cloud Scheduler for scheduling job?
 		Easiest and cheapest way to do daily scheduling on Google Cloud
-- Apache Beam to ingest JSON data into parquet files stored using Hive partitioning
+- Apache Beam to transform JSON data into parquet files stored using Hive partitioning. Data is copied from landing bucket into archive bucket in case re-processing is required. Transformed data is loaded to staging bucket (data is loaded to failed bucket if there were problems with transformation)
 	- Why Apache Beam?
 		Enables serverless data processing jobs since the jobs are highly sporadic and don't require resources to be online for long periods of time.
 	- Why store as parquet files?
+		embedded schema. quicker columnar reads. can be encoded for smaller file size.
 	- Why use Hive partitioning?
 	- Why not directly ingest JSON data into BigQuery?
 		Simpler to update the raw input daily as it doesn't require the additional data import step. Simply load the file into the HIVE partitioned GCS bucket.	
 - Read data into BigQuery using external tables
 	- Why use BigQuery?
+		Easier to build dimensional data model using SQL transformations. (E.g. implementing SCD2 in BigQuery)
 - Model the data in BigQuery
 	- How to model the data?
+		Use dimensional modelling. Fact tables: GameWeek and MatchPlayer. SCD2 for Dim tables.
 	- Why model the data in this way?
+		Simpler and more efficient to build analytical queries (fewer joins). Not as performant as wide fact tables. More difficult to update slow changing dimensions, since many records will need to be updated. Wide table would be more useful as a consumption table for viz and ML.
+	- Why not use one wide fact table (with nested (structs) and repeated (arrays) data). Data is pre-joined and therefore more performant. However downside is it mostly enables a very specific query pattern.
+
+Data model
+- Dimensions
+	- Team
+	- Player
+	- Manager
+	- seasons
+	- Competition
+	- Position
+- Facts
+	- MatchPlayer
+	- GameWeek
 
 Further Design Questions
 - How to scale up for multiple users?
@@ -55,7 +72,7 @@ Project folder structure
 |
 |--setup/
 |	|
-|	|--cloud_run/
+|	|--cloud_function/
 |	|
 |	|--cloud_scheduler/
 |	|
@@ -72,3 +89,6 @@ Project folder structure
 |--Makefile
 |
 |--README.md
+
+resources
+- https://medium.com/happiestneurons/slowly-changing-dimension-type-2-scd2-in-big-query-95330ce31625
