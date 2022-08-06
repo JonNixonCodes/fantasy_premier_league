@@ -4,7 +4,17 @@ Fantasy Premier League
 ## Usage
 ### Deploy cloud functions
 ```
-gcloud functions deploy fantasy_premierleague_api_fixtures_day --runtime=python310 --trigger-http
+# Gen1
+gcloud functions deploy fantasy_premierleague_api_fixtures_day --runtime=python310 --trigger-http --allow-unauthenticated
+# Gen2
+gcloud functions deploy fantasy-premierleague-api-elementsummary-day\
+--gen2\
+--runtime=python310\
+--source=.\
+--entry-point=fantasy_premierleague_api_elementsummary_day\
+--trigger-http\
+--allow-unauthenticated\
+--timeout=1200
 ```
 ### Trigger cloud functions
 ```

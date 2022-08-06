@@ -5,12 +5,13 @@ Objective
 - Data analysis on players, teams, form, past scores
 
 Analytical questions?
+- Which players are most cost effective?
+- What are the upcoming fixtures for each player on my team?
 - Which players are valuable to transfer?
 - Which players to form starting XI?
 - When and how to use chips?
 - Which player to pick as captain and vice captain?
 - How to visualise in-form players
-- What are the upcoming fixtures for each player on my team?
 - Stats on other managers in my league?
 
 Analytical use cases
@@ -34,7 +35,9 @@ Design
 		Easiest and cheapest way to do daily scheduling on Google Cloud
 - Apache Beam to transform JSON data into parquet files stored using Hive partitioning. Data is copied from landing bucket into archive bucket in case re-processing is required. Transformed data is loaded to staging bucket (data is loaded to failed bucket if there were problems with transformation)
 	- Why Apache Beam?
-		Enables serverless data processing jobs since the jobs are highly sporadic and don't require resources to be online for long periods of time.
+		Enables serverless data processing jobs since the jobs are highly sporadic and don't require resources to be online for long periods of time. Can do parallel processing.
+	- Why not use Cloud Functions for data processing
+		Cloud functions can only process data in-memory. More difficult to do parallel processing (needs to be hardcoded).
 	- Why store as parquet files?
 		embedded schema. quicker columnar reads. can be encoded for smaller file size.
 	- Why use Hive partitioning?
