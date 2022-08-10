@@ -24,3 +24,8 @@ curl https://us-central1-sandbox-egl1hjn.cloudfunctions.net/fantasy_premierleagu
 ```
 gcloud scheduler jobs create http fantasy_premierleague_api_fixtures_day --location=us-central1 --schedule='0 6 * * *' --uri=https://us-central1-sandbox-egl1hjn.cloudfunctions.net/fantasy_premierleague_api_fixtures_day?bucket=fantasy-premier-league
 ```
+
+### Creating pubsub topic
+```
+gcloud pubsub topics create gcs_landing_object_finalised
+```

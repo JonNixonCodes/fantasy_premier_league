@@ -5,14 +5,12 @@ Objective
 - Data analysis on players, teams, form, past scores
 
 Analytical questions?
-- Which players are most cost effective?
-- What are the upcoming fixtures for each player on my team?
-- Which players are valuable to transfer?
-- Which players to form starting XI?
-- When and how to use chips?
-- Which player to pick as captain and vice captain?
-- How to visualise in-form players
-- Stats on other managers in my league?
+- Which players are cost effective?
+- Which players are in form?
+- Which teams are likely to get clean sheets?
+- Which player has difficult fixtures coming up?
+- Which player is likely to score the most points for a given gameweek?
+- Which player is likely to score bonus points?
 
 Analytical use cases
 - Interrogate players/teams/seasons
@@ -41,6 +39,7 @@ Design
 	- Why store as parquet files?
 		embedded schema. quicker columnar reads. can be encoded for smaller file size.
 	- Why use Hive partitioning?
+		gs://myBucket/myTable/source_date=2019-10-31/lang=en/foo
 	- Why not directly ingest JSON data into BigQuery?
 		Simpler to update the raw input daily as it doesn't require the additional data import step. Simply load the file into the HIVE partitioned GCS bucket.	
 - Read data into BigQuery using external tables
@@ -92,6 +91,13 @@ Project folder structure
 |--Makefile
 |
 |--README.md
+
+Questions for Bene
+- Tips on data model
+- How to implement star schema
+- How to create a DAG for queries
+- How to create keys
+- parquet vs avro
 
 resources
 - https://medium.com/happiestneurons/slowly-changing-dimension-type-2-scd2-in-big-query-95330ce31625
