@@ -5,27 +5,60 @@ Fantasy Premier League
 ### Deploy cloud functions
 ```
 # Gen1
-gcloud functions deploy fantasy_premierleague_api_fixtures_day --runtime=python310 --trigger-http --allow-unauthenticated
+gcloud functions deploy staging-fantasy-premier-league-api-bootstrapstatic \
+--region=australia-southeast1 \
+--entry-point=event_handler \
+--runtime=python310 \
+--source=. \
+--trigger-topic=fantasy-premier-league-landing-object-finalised
+
 # Gen2
-gcloud functions deploy fantasy-premierleague-api-elementsummary-day\
---gen2\
---runtime=python310\
---source=.\
---entry-point=fantasy_premierleague_api_elementsummary_day\
---trigger-http\
---allow-unauthenticated\
+gcloud functions deploy landing-fantasy-premierleague-api-elementsummary \
+--region=australia-southeast1 \
+--allow-unauthenticated \
+--entry-point=request_handler \
+--gen2 \
+--runtime=python310 \
+--source=. \
+--trigger-http \
 --timeout=1200
 ```
 ### Trigger cloud functions
 ```
-curl https://us-central1-sandbox-egl1hjn.cloudfunctions.net/fantasy_premierleague_api_fixtures_day?bucket=fantasy-premier-league
+curl https://australia-southeast1-sandbox-egl1hjn.cloudfunctions.net/landing-fantasy-premierleague-api-bootstrapstatic?bucket=fantasy-premier-league-landing
 ```
 ### Cloud scheduler to trigger function daily
 ```
-gcloud scheduler jobs create http fantasy_premierleague_api_fixtures_day --location=us-central1 --schedule='0 6 * * *' --uri=https://us-central1-sandbox-egl1hjn.cloudfunctions.net/fantasy_premierleague_api_fixtures_day?bucket=fantasy-premier-league
+gcloud scheduler jobs create http landing-fantasy-premierleague-api-bootstrapstatic-day \
+--location=australia-southeast1 \
+--schedule='0 1 * * *' \
+--uri=https://australia-southeast1-sandbox-egl1hjn.cloudfunctions.net/landing-fantasy-premierleague-api-bootstrapstatic?bucket=fantasy-premier-league-landing
 ```
 
 ### Creating pubsub topic
 ```
-gcloud pubsub topics create gcs_landing_object_finalised
+gcloud pubsub topics create fantasy-premier-league-landing-object-finalised
+```
+
+### Create table definition file
+```
+bq mkdef \
+--source_format=NEWLINE_DELIMITED_JSON \
+--hive_partitioning_mode=CUSTOM \
+--hive_partitioning_source_uri_prefix=gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_events/{source_date:DATE} \
+--require_hive_partition_filter=false \
+ gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_events/*.jsonl > fantasy_premierleague_api_bootstrapstatic_events_def
+```
+
+### Create BigQuery dataset
+```
+bq --location=australia-southeast1 mk \
+    --dataset \
+    sandbox-egl1hjn:fantasy_premier_league
+```
+
+### Create BigQuery external table
+```
+bq mk --external_table_definition=fantasy_premierleague_api_bootstrapstatic_events_def \
+fantasy_premier_league.staging_fantasy_premierleague_api_bootstrapstatic_events
 ```
