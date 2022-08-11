@@ -11,7 +11,7 @@ def trigger_handler(cloud_event):
     # Access the CloudEvent data payload via cloud_event.data
     
     project_id = "sandbox-egl1hjn"
-    topic_id = "gcs_landing_object_finalised"
+    topic_id = "fantasy-premier-league-landing-object-finalised"
 
     publisher = pubsub_v1.PublisherClient()
 

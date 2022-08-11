@@ -29,7 +29,7 @@ def upload_blob(bucket_name, source_object, destination_blob_name):
 
 # %% main function
 @functions_framework.http
-def fantasy_premierleague_api_fixtures_day(request):
+def request_handler(request):
     """HTTP Cloud Function.
     Args:
         request (flask.Request): The request object.
@@ -55,7 +55,7 @@ def fantasy_premierleague_api_fixtures_day(request):
     data = {"source_url":url, "source_date":source_date.strftime("%Y-%m-%d %H:%M:%S"), "data":r.json()}
     # Load data to GCS
     # bucket_name = "fantasy-premier-league"
-    destination_blob_name = "landing/fantasy_premierleague_api_fixtures/"+source_date.strftime("%Y%m%d")+".json"
+    destination_blob_name = "fantasy_premierleague_api_fixtures/"+source_date.strftime("%Y%m%d")+".json"
     source_object = json.dumps(data)
     upload_blob(bucket_name, source_object, destination_blob_name)
     return 'OK'

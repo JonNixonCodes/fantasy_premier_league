@@ -4,7 +4,8 @@ import datetime
 from google.cloud import storage
 
 # %% Fantasy Premier League API endpoint
-url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+bootstrap_url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+base_url = 'https://fantasy.premierleague.com/api/element-summary/'
 source_date = datetime.date.today()
 
 # %% Upload object
@@ -29,7 +30,7 @@ def upload_blob(bucket_name, source_object, destination_blob_name):
 
 # %% main function
 @functions_framework.http
-def fantasy_premierleague_api_bootstrapstatic_day(request):
+def request_handler(request):
     """HTTP Cloud Function.
     Args:
         request (flask.Request): The request object.
@@ -49,13 +50,18 @@ def fantasy_premierleague_api_bootstrapstatic_day(request):
         bucket_name = request_args['bucket']
     else:
         return {'error':'missing input parameter:bucket'}
-    # Request data from fantasy premier league endpoint
-    r = requests.get(url)
-    # Append metadata
-    data = {"source_url":url, "source_date":source_date.strftime("%Y-%m-%d %H:%M:%S"), "data":r.json()}
-    # Load data to GCS
-    # bucket_name = "fantasy-premier-league"
-    destination_blob_name = "landing/fantasy_premierleague_api_bootstrapstatic/"+source_date.strftime("%Y%m%d")+".json"
-    source_object = json.dumps(data)
-    upload_blob(bucket_name, source_object, destination_blob_name)
+    # Request data from fantasy premier league bootstrap-static endpoint
+    r = requests.get(bootstrap_url)
+    elements = r.json()['elements']
+    element_ids = [e['id'] for e in elements]
+    # Loop through each element
+    for element_id in element_ids:
+        # Append metadata
+        url = base_url+str(element_id)+"/"
+        r = requests.get(url)
+        data = {"source_url":url, "source_date":source_date.strftime("%Y-%m-%d %H:%M:%S"), "element_id":element_id, "data":r.json()}
+        # Load data to GCS
+        destination_blob_name = "fantasy_premierleague_api_elementsummary/{}_{}.json".format(str(element_id),source_date.strftime("%Y%m%d"))
+        source_object = json.dumps(data)
+        upload_blob(bucket_name, source_object, destination_blob_name)
     return 'OK'
