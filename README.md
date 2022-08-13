@@ -5,7 +5,7 @@ Fantasy Premier League
 ### Deploy cloud functions
 ```
 # Gen1
-gcloud functions deploy staging-fantasy-premier-league-api-bootstrapstatic \
+gcloud functions deploy staging-fantasy-premier-league-api-fixtures \
 --region=australia-southeast1 \
 --entry-point=event_handler \
 --runtime=python310 \
@@ -25,7 +25,7 @@ gcloud functions deploy landing-fantasy-premierleague-api-elementsummary \
 ```
 ### Trigger cloud functions
 ```
-curl https://australia-southeast1-sandbox-egl1hjn.cloudfunctions.net/landing-fantasy-premierleague-api-bootstrapstatic?bucket=fantasy-premier-league-landing
+curl https://australia-southeast1-sandbox-egl1hjn.cloudfunctions.net/landing-fantasy-premierleague-api-fixtures?bucket=fantasy-premier-league-landing
 ```
 ### Cloud scheduler to trigger function daily
 ```
@@ -52,13 +52,13 @@ bq --location=australia-southeast1 mk \
 bq mkdef \
 --source_format=NEWLINE_DELIMITED_JSON \
 --hive_partitioning_mode=CUSTOM \
---hive_partitioning_source_uri_prefix=gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/{source_date:DATE} \
+--hive_partitioning_source_uri_prefix=gs://fantasy-premier-league-staging/fantasy_premierleague_api_fixtures/{source_date:DATE} \
 --require_hive_partition_filter=false \
- gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/*.jsonl > fantasy_premierleague_api_bootstrapstatic_elements_def
+ gs://fantasy-premier-league-staging/fantasy_premierleague_api_fixtures/*.jsonl > fantasy_premierleague_api_fixtures_def
 ```
 
 ### Create BigQuery external table
 ```
-bq mk --external_table_definition=fantasy_premierleague_api_bootstrapstatic_elements_def \
-fantasy_premier_league.staging_fantasy_premierleague_api_bootstrapstatic_elements
+bq mk --external_table_definition=fantasy_premierleague_api_fixtures_def \
+fantasy_premier_league.staging_fantasy_premierleague_api_fixtures
 ```
