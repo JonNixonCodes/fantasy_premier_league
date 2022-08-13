@@ -40,16 +40,6 @@ gcloud scheduler jobs create http landing-fantasy-premierleague-api-bootstrapsta
 gcloud pubsub topics create fantasy-premier-league-landing-object-finalised
 ```
 
-### Create table definition file
-```
-bq mkdef \
---source_format=NEWLINE_DELIMITED_JSON \
---hive_partitioning_mode=CUSTOM \
---hive_partitioning_source_uri_prefix=gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_events/{source_date:DATE} \
---require_hive_partition_filter=false \
- gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_events/*.jsonl > fantasy_premierleague_api_bootstrapstatic_events_def
-```
-
 ### Create BigQuery dataset
 ```
 bq --location=australia-southeast1 mk \
@@ -57,8 +47,18 @@ bq --location=australia-southeast1 mk \
     sandbox-egl1hjn:fantasy_premier_league
 ```
 
+### Create table definition file
+```
+bq mkdef \
+--source_format=NEWLINE_DELIMITED_JSON \
+--hive_partitioning_mode=CUSTOM \
+--hive_partitioning_source_uri_prefix=gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/{source_date:DATE} \
+--require_hive_partition_filter=false \
+ gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/*.jsonl > fantasy_premierleague_api_bootstrapstatic_elements_def
+```
+
 ### Create BigQuery external table
 ```
-bq mk --external_table_definition=fantasy_premierleague_api_bootstrapstatic_events_def \
-fantasy_premier_league.staging_fantasy_premierleague_api_bootstrapstatic_events
+bq mk --external_table_definition=fantasy_premierleague_api_bootstrapstatic_elements_def \
+fantasy_premier_league.staging_fantasy_premierleague_api_bootstrapstatic_elements
 ```
