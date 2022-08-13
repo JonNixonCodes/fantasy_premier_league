@@ -1,0 +1,11 @@
+{
+  "autodetect": true,
+  "hivePartitioningOptions": {
+    "mode": "CUSTOM",
+    "sourceUriPrefix": "gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/{source_date:DATE}"
+  },
+  "sourceFormat": "NEWLINE_DELIMITED_JSON",
+  "sourceUris": [
+    "gs://fantasy-premier-league-staging/fantasy_premierleague_api_bootstrapstatic_elements/*.jsonl"
+  ]
+}
