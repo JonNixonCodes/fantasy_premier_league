@@ -1,10 +1,15 @@
 /*
-Upsert table metadata_player_id_elements_code_map
+Stored procedure to upsert data from staging to metadata table: metadata_player_id_elements_code_map
+
+Usage:
+CALL `fantasy_premier_league.sp_upsert_metadata_player_id_elements_code_map`(DATE '2022-08-21')
+
+Author:
+Jonathan Yu
 */
 -- Set which source date to use for upsert (snapshot data)
-DECLARE run_date DATE;
-SET run_date=(SELECT max(source_date) FROM `fantasy_premier_league.staging_fantasy_premierleague_api_bootstrapstatic_elements`);
--- Merge (insert and delete)
+CREATE OR REPLACE PROCEDURE `fantasy_premier_league.sp_upsert_metadata_player_id_elements_code_map`(run_date DATE)
+BEGIN
 MERGE INTO
   `fantasy_premier_league.metadata_player_id_elements_code_map` AS T
 USING
@@ -61,3 +66,4 @@ ON
   WHEN NOT MATCHED BY TARGET AND S.merge_action='INSERT' THEN 
   INSERT (player_id, player_id_source, is_current, start_date, end_date) VALUES(S.player_id, S.player_id_source, TRUE, S.start_date, S.end_date)
 ;
+END
