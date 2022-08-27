@@ -1,11 +1,11 @@
 /*
-Stored procedure to upsert table DimPlayer
+Stored procedure to upsert table dim_player
 */
-CREATE OR REPLACE PROCEDURE `fantasy_premier_league.sp_upsert_dimplayer`(run_date DATE)
+CREATE OR REPLACE PROCEDURE `fantasy_premier_league.sp_upsert_dim_player`(run_date DATE)
 BEGIN
 -- Merge (insert, update, delete)
 MERGE INTO
-  `fantasy_premier_league.DimPlayer` AS T
+  `fantasy_premier_league.dim_player` AS T
 USING
 (
   -- Combined records from source and target tables with merge actions
@@ -51,7 +51,7 @@ USING
     SELECT
       SHA256(CONCAT(player_id,player_first_name,player_second_name)) as row_hash,*
     FROM
-      `fantasy_premier_league.DimPlayer`
+      `fantasy_premier_league.dim_player`
     WHERE
       end_date=Date'9999-12-31'
   ) AS dim

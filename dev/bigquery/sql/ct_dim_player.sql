@@ -1,8 +1,8 @@
 /*
-Create table DimPlayer
+Create table dim_player
  */
 CREATE OR REPLACE TABLE
-fantasy_premier_league.DimPlayer
+fantasy_premier_league.dim_player
 (
     player_sk STRING NOT NULL,
     player_id STRING NOT NULL,
