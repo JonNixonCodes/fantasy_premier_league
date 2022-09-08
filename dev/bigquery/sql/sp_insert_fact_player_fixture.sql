@@ -4,7 +4,8 @@ Stored procedure to insert table fact_player_fixture
 CREATE OR REPLACE PROCEDURE `fantasy_premier_league.sp_insert_fact_player_fixture`(run_date DATE)
 BEGIN
 -- DELETE EXISTING DATA
-DELETE FROM `fantasy_premier_league.fact_player_fixture` WHERE source_date=run_date;
+-- DELETE FROM `fantasy_premier_league.fact_player_fixture` WHERE source_date=run_date;
+TRUNCATE TABLE `fantasy_premier_league.fact_player_fixture`;
 -- INSERT NEW DATA
 INSERT `fantasy_premier_league.fact_player_fixture`
 SELECT
