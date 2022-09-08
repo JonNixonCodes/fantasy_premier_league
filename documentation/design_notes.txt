@@ -119,3 +119,4 @@ Questions for Bene
 resources
 - https://medium.com/happiestneurons/slowly-changing-dimension-type-2-scd2-in-big-query-95330ce31625
 - https://kontext.tech/article/670/merge-statement-in-bigquery
+- https://rapidapi.com/Wolf1984/api/football-xg-statistics
