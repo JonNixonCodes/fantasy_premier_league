@@ -5,6 +5,17 @@ Objective
 - Data analysis on players, teams, form, past scores
 
 Analytical questions?
+- Player stats (last 3/5/10/season)
+	- Average points
+	- Average goals
+	- Average assists
+	- Average minutes
+	- Average XG/XA per 90
+- What are the upcoming fixtures for each player?
+- Most transferred players in/out?
+- Players in form
+- Injury news
+- Transfer deadline
 - Which players are cost effective?
 - Which players are in form?
 - Which teams are likely to get clean sheets?
@@ -51,6 +62,12 @@ Design
 	- Why model the data in this way?
 		Simpler and more efficient to build analytical queries (fewer joins). Not as performant as wide fact tables. More difficult to update slow changing dimensions, since many records will need to be updated. Wide table would be more useful as a consumption table for viz and ML.
 	- Why not use one wide fact table (with nested (structs) and repeated (arrays) data). Data is pre-joined and therefore more performant. However downside is it mostly enables a very specific query pattern.
+	- Should I use SCD2 or SCD1 for my dimension tables?
+		- SCD2 is more robust but more complex.
+		- Updates to dimensions are rare
+		- History for dimension tables is not important
+	- How do you deal with new players and teams each season?
+		- Having an is current flag
 
 Data model
 - Dimensions
