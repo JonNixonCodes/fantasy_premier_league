@@ -74,6 +74,7 @@ INNER JOIN (
   FROM `fantasy_premier_league.metadata_player_id_elements_id_map` AS MAP
   INNER JOIN `fantasy_premier_league.dim_player` AS DIM
   ON MAP.player_id=DIM.player_id
+  AND MAP.is_current=true
 ) AS MAP_PLAYER
 ON 
   STAGING.id=MAP_PLAYER.player_id_source
